@@ -1,0 +1,24 @@
+{% set grafico = grafico or {} %}
+<div class="chart-section yt-chart-tempo-inscritos" style="margin: 22px 0;">
+    <h3>
+        <i class="fas fa-chart-bar"></i> Tempo de exibição dos inscritos
+        {% with titulo='Tempo de exibição dos inscritos', texto='Tempo total de exibição do canal dividido entre espectadores inscritos e não inscritos no período analisado.' %}
+        {% include 'partials/info_tooltip.html' %}
+        {% endwith %}
+    </h3>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
+        Últimos 30 dias — tempo de exibição do canal por status de inscrição
+        {% if grafico.disponivel %}
+        <span style="display:block; margin-top:4px;">
+            Inscritos: {{ grafico.inscritos_horas | default('0h') }} · Não inscritos: {{ grafico.nao_inscritos_horas | default('0h') }}
+        </span>
+        {% endif %}
+    </p>
+    {% if grafico.disponivel %}
+    <div class="chart-container chart-container-small">
+        <canvas id="chartYtTempoInscritos"></canvas>
+    </div>
+    {% else %}
+    <p class="yt-ranking-empty">Disponível com YouTube Analytics (OAuth). Conecte o token para ver o tempo de exibição por inscritos.</p>
+    {% endif %}
+</div>

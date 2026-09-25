@@ -1,0 +1,355 @@
+{# Painel de performance reutilizável (site principal / secundário) #}
+<div class="header-section">
+    <div>
+        <h1>
+            Performance: {{ site.nome }}
+            <small style="font-size: 0.55em; font-weight: normal; color: var(--text-muted); margin-left: 10px;">
+                <a href="{{ site.url }}" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">{{ site.url }}</a>
+            </small>
+        </h1>
+    </div>
+</div>
+
+{% if site.status_integracao and site.status_integracao != 'ok' %}
+<div style="background: linear-gradient(135deg, #f0f7ff 0%, #fff 100%); border-left: 4px solid #4A90D9; padding: 14px 18px; border-radius: 8px; margin-bottom: 20px;">
+    <strong style="color: #4A90D9;"><i class="fas fa-plug"></i> Integração:</strong>
+    <span style="color: #444; margin-left: 8px;">{{ site.status_integracao }}</span>
+</div>
+{% endif %}
+
+<div class="filter-bar">
+    <label><i class="fas fa-calendar"></i> Data:</label>
+    <input type="date" id="{{ chart_prefix }}Start"> até <input type="date" id="{{ chart_prefix }}End">
+    <button class="btn-filter" onclick="filterSiteByDate('{{ chart_prefix }}')">Aplicar</button>
+    <button class="btn-clear" onclick="clearFilterSite('{{ chart_prefix }}')">Limpar Filtros</button>
+</div>
+
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3>Usuários Ativos</h3>
+            <div class="value" id="metric-{{ chart_prefix }}-usuarios">{{ site.metricas_principais.usuarios_ativos }}</div>
+        </div>
+        <div class="metric-icon"><i class="fas fa-user-check"></i></div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3 title="Total de sessões no site no período analisado.">Sessões</h3>
+            <div class="value" id="metric-{{ chart_prefix }}-sessoes">{{ site.metricas_principais.sessoes | default('0') }}</div>
+        </div>
+        <div class="metric-icon"><i class="fas fa-door-open"></i></div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3 title="Total de visualizações de páginas no período.">Visualizações</h3>
+            <div class="value" id="metric-{{ chart_prefix }}-visualizacoes">{{ site.metricas_principais.visualizacoes | default('0') }}</div>
+        </div>
+        <div class="metric-icon"><i class="fas fa-eye"></i></div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3 title="Novos usuários que acessaram o site pela primeira vez.">Novos Usuários</h3>
+            <div class="value" id="metric-{{ chart_prefix }}-novos-usuarios">{{ site.metricas_principais.novos_usuarios }}</div>
+        </div>
+        <div class="metric-icon"><i class="fas fa-user-plus"></i></div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3 title="Tempo médio que os usuários permanecem interagindo com o conteúdo.">Tempo de Engajamento</h3>
+            <div class="value" id="metric-{{ chart_prefix }}-tempo-engajamento">{{ site.metricas_principais.tempo_engajamento }}</div>
+        </div>
+        <div class="metric-icon"><i class="fas fa-stopwatch"></i></div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3 title="Percentual de sessões em que o usuário saiu após ver apenas uma página.">Taxa de Rejeição</h3>
+            <div class="value" id="metric-{{ chart_prefix }}-taxa-rejeicao">{{ site.metricas_principais.taxa_rejeicao }}</div>
+        </div>
+        <div class="metric-icon"><i class="fas fa-percentage"></i></div>
+    </div>
+</div>
+
+<div class="section-title" style="margin-top: 25px;">
+    <h2><i class="fas fa-chart-line"></i> Atividade</h2>
+    <p>Padrões de acesso e engajamento nos últimos 30 dias</p>
+</div>
+<div class="metrics-grid" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3>Sessões</h3>
+            <div class="value" id="metric-{{ chart_prefix }}-atividade-sessoes">{{ site.atividade.sessoes | default('0') }}</div>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3>Visualizações</h3>
+            <div class="value" id="metric-{{ chart_prefix }}-atividade-visualizacoes">{{ site.atividade.visualizacoes | default('0') }}</div>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3>Eventos</h3>
+            <div class="value" id="metric-{{ chart_prefix }}-atividade-eventos">{{ site.atividade.eventos | default('0') }}</div>
+        </div>
+    </div>
+</div>
+<div class="charts-grid" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+    <div class="chart-section">
+        <h3><i class="fas fa-clock"></i> Atividade por Hora</h3>
+        <div class="chart-container">
+            <canvas id="chart-{{ chart_prefix }}-atividade-hora"></canvas>
+        </div>
+    </div>
+    <div class="chart-section">
+        <h3><i class="fas fa-calendar-week"></i> Atividade por Dia da Semana</h3>
+        <div class="chart-container">
+            <canvas id="chart-{{ chart_prefix }}-atividade-dia"></canvas>
+        </div>
+    </div>
+    <div class="chart-section">
+        <h3><i class="fas fa-heartbeat"></i> Taxa de Engajamento Diário</h3>
+        <div class="chart-container">
+            <canvas id="chart-{{ chart_prefix }}-engajamento"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="section-title">
+    <h2><i class="fas fa-search"></i> SEO / Ranking</h2>
+    {% if site.seo_fonte == 'ga4_organico' %}
+    <p>Tráfego orgânico via Google Analytics (últimos 30 dias)</p>
+    {% else %}
+    <p>Desempenho no Google Search Console (últimos 30 dias)</p>
+    {% endif %}
+</div>
+<div class="metrics-grid" style="grid-template-columns: repeat(4, 1fr);">
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3>Impressões</h3>
+            <div class="value">{{ site.google_search.visualizacoes | default('0') }}</div>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3>Cliques</h3>
+            <div class="value">{{ site.google_search.cliques | default('0') }}</div>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3>CTR</h3>
+            <div class="value">{{ site.google_search.ctr | default('0%') }}</div>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3>Posição Média</h3>
+            <div class="value">{{ site.google_search.posicao | default('0') }}</div>
+        </div>
+    </div>
+</div>
+<div class="charts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+    <div class="chart-section">
+        <h3><i class="fas fa-key"></i> {% if site.seo_fonte == 'ga4_organico' %}Top Páginas — Tráfego Orgânico{% else %}Top Palavras-chave{% endif %}</h3>
+        <div class="chart-container">
+            <canvas id="chart-{{ chart_prefix }}-seo-queries"></canvas>
+        </div>
+    </div>
+    <div class="chart-section">
+        <h3><i class="fas fa-chart-area"></i> {% if site.seo_fonte == 'ga4_organico' %}Evolução — Tráfego Orgânico{% else %}Evolução SEO{% endif %}</h3>
+        <div class="chart-container">
+            <canvas id="chart-{{ chart_prefix }}-seo-evolucao"></canvas>
+        </div>
+    </div>
+</div>
+<div class="charts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+    <div class="table-section" style="margin-bottom: 0;">
+        <div class="table-header"><h3><i class="fas fa-key"></i> Ranking — {% if site.seo_fonte == 'ga4_organico' %}Páginas Orgânicas (GA4){% else %}Palavras-chave{% endif %}</h3></div>
+        <div class="table-container" style="max-height: 320px; overflow-y: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        {% if site.seo_fonte == 'ga4_organico' %}
+                        <th>Página</th>
+                        <th>Sessões</th>
+                        <th>Visualizações</th>
+                        <th>CTR</th>
+                        {% else %}
+                        <th>Palavra-chave</th>
+                        <th>Cliques</th>
+                        <th>Impressões</th>
+                        <th>CTR</th>
+                        <th>Posição</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if site.seo_fonte == 'ga4_organico' %}
+                    {% for p in (site.seo_ranking.top_pages if site.seo_ranking else []) %}
+                    {% if p.page and p.page != '(not set)' %}
+                    <tr>
+                        <td><small>{{ p.page }}</small></td>
+                        <td>{{ p.cliques }}</td>
+                        <td>{{ p.impressoes }}</td>
+                        <td>{{ p.ctr }}</td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                    {% set ga4_pages = (site.seo_ranking.top_pages if site.seo_ranking else []) | selectattr('page') | rejectattr('page', 'equalto', '(not set)') | list %}
+                    {% if ga4_pages | length == 0 %}
+                    <tr><td colspan="4" style="text-align:center; color:#999;">Sem tráfego orgânico no período</td></tr>
+                    {% endif %}
+                    {% else %}
+                    {% for q in (site.seo_ranking.top_queries if site.seo_ranking else []) %}
+                    <tr>
+                        <td>{{ q.query }}</td>
+                        <td>{{ q.cliques }}</td>
+                        <td>{{ q.impressoes }}</td>
+                        <td>{{ q.ctr }}</td>
+                        <td>{{ q.posicao }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" style="text-align:center; color:#999;">Sem dados de SEO disponíveis</td></tr>
+                    {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="table-section" style="margin-bottom: 0;">
+        <div class="table-header"><h3><i class="fas fa-file-alt"></i> Ranking — Páginas no Google</h3></div>
+        <div class="table-container" style="max-height: 320px; overflow-y: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Página</th>
+                        <th>Cliques</th>
+                        <th>Impressões</th>
+                        <th>CTR</th>
+                        <th>Posição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in (site.seo_ranking.top_pages if site.seo_ranking else []) %}
+                    <tr>
+                        <td><small>{{ p.page }}</small></td>
+                        <td>{{ p.cliques }}</td>
+                        <td>{{ p.impressoes }}</td>
+                        <td>{{ p.ctr }}</td>
+                        <td>{{ p.posicao }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="5" style="text-align:center; color:#999;">Sem dados de páginas no Google</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="section-title">
+    <h2><i class="fas fa-chart-area"></i> Aquisição e Conteúdo</h2>
+    <p>Tendência de acessos, canais e páginas mais visitadas</p>
+</div>
+<div class="charts-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 25px;">
+    <div class="chart-section">
+        <h3><i class="fas fa-chart-area"></i> Tendência de Acessos (30 dias)</h3>
+        <div class="chart-container">
+            <canvas id="chart-line-{{ chart_prefix }}"></canvas>
+        </div>
+    </div>
+    <div class="chart-section">
+        <h3><i class="fas fa-share-alt"></i> Canais de Aquisição</h3>
+        <div class="chart-container">
+            <canvas id="chart-bar-channels-{{ chart_prefix }}"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="charts-grid" style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 25px;">
+    <div class="table-section" style="margin-bottom: 0;">
+        <div class="table-header">
+            <h3><i class="fas fa-file-alt"></i> Páginas Mais Visitadas</h3>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Título da Página</th>
+                        <th>Visualizações</th>
+                    </tr>
+                </thead>
+                <tbody id="tab-{{ chart_prefix }}-paginas">
+                    {% for pg in (site.paginas_mais_visitadas if site and site.paginas_mais_visitadas else []) %}
+                    <tr>
+                        <td>
+                            <strong>{{ pg.titulo }}</strong><br>
+                            <small style="color: #999;">{{ pg.url }}</small>
+                        </td>
+                        <td>{{ pg.vistas }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="2" style="text-align:center; color:#999;">Sem dados de páginas</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="section-title">
+    <h2><i class="fas fa-map-marked-alt"></i> Dispositivos e Localidades</h2>
+    <p>De onde e como os visitantes acessam o site</p>
+</div>
+<div class="charts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+    <div class="chart-section">
+        <h3><i class="fas fa-laptop"></i> Dispositivos</h3>
+        <div class="chart-container">
+            <canvas id="chart-pie-device-{{ chart_prefix }}"></canvas>
+        </div>
+    </div>
+    <div class="chart-section">
+        <h3><i class="fas fa-map"></i> Acessos por Estado</h3>
+        <div class="chart-container">
+            <canvas id="chart-{{ chart_prefix }}-estados"></canvas>
+        </div>
+    </div>
+</div>
+<div class="charts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+    <div class="table-section" style="margin-bottom: 0;">
+        <div class="table-header"><h3><i class="fas fa-flag"></i> Top Estados</h3></div>
+        <div class="table-container" style="max-height: 300px; overflow-y: auto;">
+            <table>
+                <thead><tr><th>Estado</th><th>Usuários</th><th>Sessões</th></tr></thead>
+                <tbody>
+                    {% for e in (site.localidades.estados if site.localidades else []) %}
+                    <tr><td>{{ e.estado }}</td><td>{{ e.usuarios }}</td><td>{{ e.sessoes }}</td></tr>
+                    {% else %}
+                    <tr><td colspan="3" style="text-align:center; color:#999;">Sem dados geográficos</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="table-section" style="margin-bottom: 0;">
+        <div class="table-header"><h3><i class="fas fa-city"></i> Top Cidades</h3></div>
+        <div class="table-container" style="max-height: 300px; overflow-y: auto;">
+            <table>
+                <thead><tr><th>Cidade</th><th>Estado</th><th>Usuários</th></tr></thead>
+                <tbody>
+                    {% for c in (site.localidades.cidades if site.localidades else []) %}
+                    <tr><td>{{ c.cidade }}</td><td>{{ c.estado }}</td><td>{{ c.usuarios }}</td></tr>
+                    {% else %}
+                    <tr><td colspan="3" style="text-align:center; color:#999;">Sem dados de cidades</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div style="text-align: center; margin-top: 20px;">
+    <a href="{{ site.url }}" target="_blank" class="site-card-btn">
+        <i class="fas fa-external-link-alt"></i> Acessar Site
+    </a>
+</div>

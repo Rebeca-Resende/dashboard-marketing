@@ -1,0 +1,37 @@
+# Credenciais e tokens (copie config.example.json → config.json)
+config.json
+token.json
+service_account.json
+*.pem
+
+# Ambiente Python
+.venv/
+__pycache__/
+*.py[cod]
+.Python
+
+# Saída gerada e cache local
+dashboard.html
+test_dashboard_rendered.html
+data/history/*.json
+data/history/*.parquet
+!data/history/.gitkeep
+
+# Logs
+logs/
+*.log
+output.log
+
+# Node (export PDF opcional local)
+node_modules/
+package-lock.json
+
+# Planilhas / PDFs locais na raiz
+*.xlsx
+*.pdf
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

@@ -1,0 +1,100 @@
+{% set rankings = rankings or {} %}
+{% set yt_oauth = oauth_enabled if oauth_enabled is defined else true %}
+<div class="yt-rankings-section">
+    <div class="section-subtitle yt-section-videos" style="margin-top: 6px;">
+        <span class="yt-color-dot yt-dot-videos"></span> Rankings e Tráfego — últimos 30 dias
+    </div>
+
+    <div class="yt-ranking-block">
+        <button type="button" class="yt-ranking-toggle" onclick="toggleYtRanking('yt-rank-videos')">
+            <span>
+                <i class="fas fa-trophy"></i> Vídeos mais acessados
+                {% with titulo='Vídeos mais acessados', texto='Ranking dos vídeos mais assistidos no período analisado.' %}
+                {% include 'partials/info_tooltip.html' %}
+                {% endwith %}
+            </span>
+            <i class="fas fa-chevron-down yt-ranking-chevron"></i>
+        </button>
+        <div id="yt-rank-videos" class="yt-ranking-panel">
+            {% if rankings.videos_mais_acessados %}
+            <ol class="yt-ranking-list">
+                {% for item in rankings.videos_mais_acessados %}
+                <li>
+                    <span class="yt-rank-pos">{{ item.rank }}</span>
+                    <div class="yt-rank-body">
+                        {% if item.link %}
+                        <a href="{{ item.link }}" target="_blank" class="yt-rank-title">{{ item.titulo }}</a>
+                        {% else %}
+                        <span class="yt-rank-title">{{ item.titulo }}</span>
+                        {% endif %}
+                        <span class="yt-rank-metric">{{ item.visualizacoes }} visualizações</span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ol>
+            {% else %}
+            <p class="yt-ranking-empty">Sem dados de vídeos no período.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if yt_oauth %}
+    <div class="yt-ranking-block">
+        <button type="button" class="yt-ranking-toggle" onclick="toggleYtRanking('yt-rank-trafego-geral')">
+            <span>
+                <i class="fas fa-route"></i> Como os espectadores encontram você (TRAF. GERAL)
+                {% with titulo='Tráfego geral', texto='Porcentagem da origem do tráfego total: vídeos sugeridos, pesquisa, páginas do canal, origem direta, externa, entre outras.' %}
+                {% include 'partials/info_tooltip.html' %}
+                {% endwith %}
+            </span>
+            <i class="fas fa-chevron-down yt-ranking-chevron"></i>
+        </button>
+        <div id="yt-rank-trafego-geral" class="yt-ranking-panel">
+            {% if rankings.trafego_geral %}
+            <ol class="yt-ranking-list">
+                {% for item in rankings.trafego_geral %}
+                <li>
+                    <span class="yt-rank-pos">{{ loop.index }}</span>
+                    <div class="yt-rank-body">
+                        <span class="yt-rank-title">{{ item.origem }}</span>
+                        <span class="yt-rank-metric">{{ item.percentual | default('0%') }} · {{ item.views }} views</span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ol>
+            {% else %}
+            <p class="yt-ranking-empty">Sem dados de tráfego no período.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="yt-ranking-block">
+        <button type="button" class="yt-ranking-toggle" onclick="toggleYtRanking('yt-rank-trafego-externo')">
+            <span>
+                <i class="fas fa-external-link-alt"></i> Como os espectadores encontram você (TRAF. EXTERNO)
+                {% with titulo='Tráfego externo', texto='Porcentagem da origem do tráfego externo: Google Search, WhatsApp, Gmail e outros sites de referência.' %}
+                {% include 'partials/info_tooltip.html' %}
+                {% endwith %}
+            </span>
+            <i class="fas fa-chevron-down yt-ranking-chevron"></i>
+        </button>
+        <div id="yt-rank-trafego-externo" class="yt-ranking-panel">
+            {% if rankings.trafego_externo %}
+            <ol class="yt-ranking-list">
+                {% for item in rankings.trafego_externo %}
+                <li>
+                    <span class="yt-rank-pos">{{ loop.index }}</span>
+                    <div class="yt-rank-body">
+                        <span class="yt-rank-title">{{ item.origem }}</span>
+                        <span class="yt-rank-metric">{{ item.percentual | default('0%') }} · {{ item.views }} views</span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ol>
+            {% else %}
+            <p class="yt-ranking-empty">Sem dados de tráfego externo no período.</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>

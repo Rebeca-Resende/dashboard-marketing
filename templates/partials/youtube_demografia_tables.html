@@ -1,0 +1,86 @@
+{% set demo = demografia or {} %}
+<div class="section-subtitle yt-section-videos" style="margin-top: 18px;">
+    <span class="yt-color-dot yt-dot-videos"></span> Demografia dos espectadores — últimos 30 dias
+</div>
+
+{% if demo.disponivel %}
+<div class="yt-demografia-grid">
+    <div class="table-section yt-demografia-table">
+        <div class="table-header">
+            <h3>
+                Dados de Idade
+                {% with titulo='Dados de Idade', texto='Porcentagem da faixa etária dos espectadores dos vídeos no período analisado.' %}
+                {% include 'partials/info_tooltip.html' %}
+                {% endwith %}
+            </h3>
+        </div>
+        <div class="table-container">
+            <table class="yt-metric-table yt-demo-table">
+                <thead>
+                    <tr>
+                        <th>Faixa etária</th>
+                        <th>Percentual</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in demo.idade %}
+                    <tr>
+                        <td>{{ item.label }}</td>
+                        <td>
+                            <div class="yt-demo-pct-cell">
+                                <div class="yt-demo-bar-track">
+                                    <div class="yt-demo-bar-fill yt-demo-bar-idade" style="width: {{ item.valor | default(0) }}%;"></div>
+                                </div>
+                                <span class="yt-demo-pct-value">{{ item.percentual }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="table-section yt-demografia-table">
+        <div class="table-header">
+            <h3>
+                Dados de Gênero
+                {% with titulo='Dados de Gênero', texto='Porcentagem do gênero dos espectadores dos vídeos no período analisado.' %}
+                {% include 'partials/info_tooltip.html' %}
+                {% endwith %}
+            </h3>
+        </div>
+        <div class="table-container">
+            <table class="yt-metric-table yt-demo-table">
+                <thead>
+                    <tr>
+                        <th>Gênero</th>
+                        <th>Percentual</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in demo.genero %}
+                    <tr>
+                        <td>{{ item.label }}</td>
+                        <td>
+                            <div class="yt-demo-pct-cell">
+                                <div class="yt-demo-bar-track">
+                                    <div class="yt-demo-bar-fill yt-demo-bar-genero" style="width: {{ item.valor | default(0) }}%;"></div>
+                                </div>
+                                <span class="yt-demo-pct-value">{{ item.percentual }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="table-section yt-demografia-table yt-demografia-empty">
+    <p class="yt-ranking-empty">
+        Disponível com YouTube Analytics (OAuth). Requer volume mínimo de espectadores para exibir dados de idade e gênero.
+    </p>
+</div>
+{% endif %}

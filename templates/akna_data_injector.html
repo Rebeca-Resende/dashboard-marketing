@@ -1,0 +1,35 @@
+<!-- 
+    INJETOR DE DADOS AKNA
+    Injeta todos os dados (1739+) em JSON para o JavaScript gerenciar paginação
+    Renderiza apenas os primeiros 50 no HTML (rápido)
+-->
+
+<script id="akna_data_json" type="application/json">
+{
+  "all_data": {{ data.akna_manual.analytics.all_data | tojson }},
+  "total_registros": {{ data.akna_manual.analytics.kpis.total_campanhas | default(0) }}
+}
+</script>
+
+<script>
+// Injetar dados no aknaOptimizer assim que a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const dataScript = document.getElementById('akna_data_json');
+        if (dataScript) {
+            const aknaData = JSON.parse(dataScript.textContent);
+            
+            if (window.aknaOptimizer && aknaData.all_data && aknaData.all_data.length > 0) {
+                console.log(`📊 Injetando ${aknaData.all_data.length} registros no aknaOptimizer`);
+                
+                // Inicializar com todos os dados
+                window.aknaOptimizer.init(aknaData.all_data);
+                
+                console.log(`✅ ${aknaData.all_data.length} registros carregados e prontos para paginação`);
+            }
+        }
+    } catch (e) {
+        console.error('❌ Erro ao injetar dados AKNA:', e);
+    }
+});
+</script>

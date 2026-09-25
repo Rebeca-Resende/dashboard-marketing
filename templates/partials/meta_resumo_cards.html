@@ -1,0 +1,27 @@
+{% set resumo = resumo or {} %}
+<div class="meta-resumo-section" style="margin: 20px 0 25px;">
+    <div class="section-subtitle">Resumo e Sugestões</div>
+    <div class="meta-resumo-grid">
+        <div class="meta-resumo-card meta-resumo-alcance">
+            <div class="meta-resumo-icon"><i class="fas fa-bullhorn"></i></div>
+            <div class="meta-resumo-text">
+                <h4>Maior alcance</h4>
+                <p>{{ resumo.melhor_formato | default('Sem dados suficientes para identificar o melhor formato.') }}</p>
+            </div>
+        </div>
+        <div class="meta-resumo-card meta-resumo-pico">
+            <div class="meta-resumo-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="meta-resumo-text">
+                <h4>Pico de interações</h4>
+                <p>{{ resumo.pico_interacoes | default('Sem pico de interações identificado no período.') }}</p>
+            </div>
+        </div>
+        <div class="meta-resumo-card meta-resumo-engajamento meta-resumo-{{ resumo.engajamento_nivel | default('indisponivel') }}">
+            <div class="meta-resumo-icon"><i class="fas fa-heart"></i></div>
+            <div class="meta-resumo-text">
+                <h4>Engajamento</h4>
+                <p>{{ resumo.engajamento | default('Sem dados de engajamento no período.') }}</p>
+            </div>
+        </div>
+    </div>
+</div>

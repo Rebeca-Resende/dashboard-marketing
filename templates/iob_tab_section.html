@@ -1,0 +1,121 @@
+        <!-- ABA: IOB (Extrato de Acesso) -->
+        <div id="iob" class="tab-content" style="display: none;">
+            <div class="header-section">
+                <h1><i class="fas fa-book"></i> Acessos ao portal</h1>
+                <p style="color: #666; margin-top: 10px;">
+                    Logins, logouts e uso de ferramentas na área restrita (dados ilustrativos).
+                </p>
+            </div>
+
+            <div class="metrics-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <h3>Total de Registros</h3>
+                        <div class="value" id="iob_kpi_total">{{ data.iob.analytics.kpis.total_registros | default(0) if data.iob else 0 }}</div>
+                    </div>
+                    <div class="metric-icon" style="background: #1565C022; color: #1565C0;"><i class="fas fa-list"></i></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <h3>Logins</h3>
+                        <div class="value" id="iob_kpi_logins">{{ data.iob.analytics.kpis.total_logins | default(0) if data.iob else 0 }}</div>
+                    </div>
+                    <div class="metric-icon" style="background: #4CAF5022; color: #4CAF50;"><i class="fas fa-sign-in-alt"></i></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <h3>Logouts</h3>
+                        <div class="value" id="iob_kpi_logouts">{{ data.iob.analytics.kpis.total_logouts | default(0) if data.iob else 0 }}</div>
+                    </div>
+                    <div class="metric-icon" style="background: #FF980022; color: #FF9800;"><i class="fas fa-sign-out-alt"></i></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <h3>Acessos a Ferramentas</h3>
+                        <div class="value" id="iob_kpi_ferramentas">{{ data.iob.analytics.kpis.total_acessos_ferramenta | default(0) if data.iob else 0 }}</div>
+                    </div>
+                    <div class="metric-icon" style="background: #0D47A122; color: #0D47A1;"><i class="fas fa-tools"></i></div>
+                </div>
+            </div>
+
+            <div style="background: #fff; padding: 20px; border-radius: 14px; margin-bottom: 25px; box-shadow: var(--shadow-sm); border-left: 5px solid #1565C0;">
+                <h3 style="margin-top: 0; color: #1565C0;"><i class="fas fa-filter"></i> Filtrar por período</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+                    <div>
+                        <label style="font-weight: 600; font-size: 0.85rem;">Data Início</label>
+                        <input type="date" id="iob_filter_start" style="display: block; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="font-weight: 600; font-size: 0.85rem;">Data Fim</label>
+                        <input type="date" id="iob_filter_end" style="display: block; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+                    <div style="flex: 2; min-width: 220px;">
+                        <label style="font-weight: 600; font-size: 0.85rem;">Grupo de Ferramenta</label>
+                        <select id="iob_filter_grupo" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-filter" onclick="applyIobFilters()" style="padding: 9px 15px; background: #1565C0; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                        <i class="fas fa-filter"></i> Aplicar
+                    </button>
+                    <button type="button" class="btn-clear" onclick="resetIobFilters()" style="padding: 9px 15px;">Limpar</button>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); gap: 25px; margin-bottom: 30px;">
+                <div class="chart-section">
+                    <h3><i class="fas fa-chart-bar"></i> Acessos por Grupo de Ferramenta</h3>
+                    <div class="chart-container">
+                        <canvas id="chartIobGruposBar"></canvas>
+                    </div>
+                </div>
+                <div class="chart-section">
+                    <h3><i class="fas fa-chart-pie"></i> Distribuição por Grupo</h3>
+                    <div class="chart-container">
+                        <canvas id="chartIobGruposPie"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: #ffffff; padding: 25px; border-radius: 14px; box-shadow: var(--shadow-sm);">
+                <h3 style="margin-top: 0; color: #1565C0;">
+                    <i class="fas fa-table"></i> Extrato técnico
+                    (<span id="iob_table_count">{{ data.iob.analytics.kpis.total_registros | default(0) if data.iob else 0 }}</span> registros)
+                </h3>
+                <div class="table-container" style="max-height: 600px; overflow: auto;">
+                    <table id="tableIobAccess">
+                        <thead>
+                            <tr>
+                                <th>Data e Hora</th>
+                                <th>Tipo</th>
+                                <th>Grupo</th>
+                                <th>Ação 1</th>
+                                <th>Ação 3</th>
+                                <th>Ação 4</th>
+                            </tr>
+                        </thead>
+                        <tbody id="iob_table_body">
+                            {% if data.iob and data.iob.analytics.all_data %}
+                                {% for item in data.iob.analytics.all_data %}
+                                <tr data-iso="{{ item.data_hora_iso }}" data-grupo="{{ item.grupo_ferramenta }}">
+                                    <td>{{ item.data_hora }}</td>
+                                    <td>{{ item.tipo_evento }}</td>
+                                    <td>{{ item.grupo_ferramenta }}</td>
+                                    <td>{{ item.acao_1 }}</td>
+                                    <td>{{ item.acao_3 }}</td>
+                                    <td title="{{ item.acao_4 }}">{{ item.acao_4 }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" style="text-align: center; padding: 40px; color: #999;">
+                                        Nenhum registro encontrado. Configure a pasta de planilhas em data_paths ou data/input/
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                <script id="iob-analytics-json" type="application/json">{% if data.iob %}{{ data.iob.analytics | tojson }}{% else %}{}{% endif %}</script>
+            </div>
+        </div>

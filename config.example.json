@@ -1,0 +1,63 @@
+{
+  "google_oauth": {
+    "client_id": "SEU_CLIENT_ID.apps.googleusercontent.com",
+    "project_id": "seu-projeto-gcp",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_secret": "SEU_CLIENT_SECRET",
+    "redirect_uris": ["http://localhost"]
+  },
+  "google_analytics": {
+    "service_account_file": "service_account.json",
+    "property_ids": {
+      "Site institucional": "",
+      "Site secundário": ""
+    }
+  },
+  "site_primary": {
+    "name": "Site principal",
+    "url": "https://www.seudominio.org.br/",
+    "gsc_site_url": "https://www.seudominio.org.br/",
+    "ga4_property_id": "",
+    "enabled": true,
+    "include_representacao": true
+  },
+  "site_secondary": {
+    "name": "Site secundário",
+    "url": "https://www.outrodominio.org.br/",
+    "gsc_site_url": "https://www.outrodominio.org.br/",
+    "ga4_property_id": "",
+    "enabled": true
+  },
+  "youtube": {
+    "api_key": "SUA_API_KEY",
+    "channel_id": "UCxxxxxxxx"
+  },
+  "meta": {
+    "access_token": "SEU_TOKEN_META",
+    "page_id": "",
+    "instagram_id": "",
+    "app_id": "",
+    "app_secret": ""
+  },
+  "linkedin_abiarb": {
+    "access_token": "",
+    "client_id": "",
+    "client_secret": "",
+    "org_id": ""
+  },
+  "openai": {
+    "api_key": ""
+  },
+  "akna": {
+    "user": "",
+    "pass": "",
+    "client_code": ""
+  },
+  "data_paths": {
+    "akna": "data/input/akna",
+    "iob": "data/input/iob",
+    "linkedin": "data/input/linkedin"
+  }
+}

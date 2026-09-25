@@ -1,0 +1,56 @@
+{% set aud = audiencia or {} %}
+<div class="section-subtitle yt-section-canal" style="margin-top: 18px;">
+    <span class="yt-color-dot yt-dot-canal"></span> Audiência — últimos 30 dias
+</div>
+<div class="table-section yt-audiencia-table">
+    <div class="table-container">
+        <table id="tableYoutubeAudiencia" class="yt-metric-table">
+            <thead>
+                <tr>
+                    <th>Métrica</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        Novos Espectadores
+                        {% with titulo='Novos Espectadores', texto='Número de novos indivíduos visualizando os vídeos.' %}
+                        {% include 'partials/info_tooltip.html' %}
+                        {% endwith %}
+                    </td>
+                    <td id="yt-audiencia-novos">{{ aud.novos_espectadores | default('0') }}</td>
+                </tr>
+                <tr>
+                    <td>
+                        Espectadores Recorrentes
+                        {% with titulo='Espectadores Recorrentes', texto='Número de indivíduos que já assistiram anteriormente e assistiram no período analisado.' %}
+                        {% include 'partials/info_tooltip.html' %}
+                        {% endwith %}
+                    </td>
+                    <td id="yt-audiencia-recorrentes">{{ aud.espectadores_recorrentes | default('0') }}</td>
+                </tr>
+                <tr>
+                    <td>
+                        Espectadores Únicos
+                        {% with titulo='Espectadores Únicos', texto='Número de indivíduos únicos, resulta da soma dos novos e recorrentes espectadores.' %}
+                        {% include 'partials/info_tooltip.html' %}
+                        {% endwith %}
+                    </td>
+                    <td id="yt-audiencia-unicos">{{ aud.espectadores_unicos | default('0') }}</td>
+                </tr>
+                <tr>
+                    <td>
+                        Inscritos
+                        {% with titulo='Inscritos', texto='Mudança no número de inscritos (+ ou -) no período analisado.' %}
+                        {% include 'partials/info_tooltip.html' %}
+                        {% endwith %}
+                    </td>
+                    <td id="yt-audiencia-inscritos" class="{% if (aud.inscritos_valor | default(0) | int) > 0 %}yt-inscritos-positivo{% elif (aud.inscritos_valor | default(0) | int) < 0 %}yt-inscritos-negativo{% endif %}">
+                        {{ aud.inscritos | default('+0') }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

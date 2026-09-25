@@ -1,0 +1,93 @@
+{# Resumo de acessos na Visão Geral — site principal / secundário #}
+<div class="section-title">
+    <h2>
+        <i class="fas fa-globe"></i> Acessos ao Site{% if section_label %} — {{ section_label }}{% endif %}
+        <small style="font-size: 0.55em; font-weight: normal; color: var(--text-muted); margin-left: 10px;">
+            <a href="{{ site.url | default('#') }}" target="_blank" rel="noopener" style="color: inherit; text-decoration: none;">{{ site.url | default('') }}</a>
+        </small>
+    </h2>
+    <p>Como estão as tendências em acessos no período?</p>
+</div>
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3>Usuários Ativos</h3>
+            <div class="value" id="card-{{ card_prefix }}-usuarios-ativos">{{ site.metricas_principais.usuarios_ativos | default('0') }}</div>
+        </div>
+        <div class="metric-icon"><i class="fas fa-users"></i></div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3 title="Total de acessos (sessões) em contas distintas no período selecionado.">Acessos em contas distintas</h3>
+            <div class="value" id="card-{{ card_prefix }}-novos-usuarios">{{ site.metricas_principais.novos_usuarios | default('0') }}</div>
+        </div>
+        <div class="metric-icon"><i class="fas fa-user-plus"></i></div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3 title="Percentual de sessões em que o usuário saiu após ver apenas uma página.">Taxa de Rejeição</h3>
+            <div class="value" id="card-{{ card_prefix }}-taxa-rejeicao">{{ site.metricas_principais.taxa_rejeicao | default('0%') }}</div>
+        </div>
+        <div class="metric-icon"><i class="fas fa-percentage"></i></div>
+    </div>
+</div>
+
+<div class="section-subtitle">Comportamento no Site</div>
+<div class="metrics-grid">
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3>Taxa de Engajamento</h3>
+            <div class="value" id="card-{{ card_prefix }}-taxa-engajamento">{{ site.metricas_principais.taxa_engajamento | default('0%') }}</div>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3>Duração da Sessão</h3>
+            <div class="value" id="card-{{ card_prefix }}-tempo-engajamento">{{ site.metricas_principais.tempo_engajamento | default('0s') }}</div>
+        </div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-info">
+            <h3>Visualizações por Usuário</h3>
+            <div class="value" id="card-{{ card_prefix }}-vistas-por-usuario">{{ site.metricas_principais.vistas_por_usuario | default('0') }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="charts-grid-3">
+    <div class="chart-section">
+        <h3>Páginas Mais Acessadas</h3>
+        <div class="table-container" style="max-height: 200px;">
+            <table style="font-size: 0.85rem;">
+                <thead><tr><th>Página</th><th>Vistas</th></tr></thead>
+                <tbody id="overview-{{ card_prefix }}-paginas">
+                    {% for pg in (site.paginas_mais_visitadas if site and site.paginas_mais_visitadas else []) %}
+                    <tr><td>{{ pg.titulo }}</td><td>{{ pg.vistas }}</td></tr>
+                    {% else %}
+                    <tr><td colspan="2" style="text-align:center; color:#999;">Sem dados de páginas</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="chart-section">
+        <h3>
+            Performance Google Search
+            {% if site.seo_fonte == 'ga4_organico' %}
+            <small style="font-size:0.7em; color:#888; font-weight:normal;">(tráfego orgânico GA4)</small>
+            {% endif %}
+        </h3>
+        <div class="metrics-mini-grid" data-gsc-prefix="{{ gsc_id_prefix }}">
+            <div class="mini-card"><span>Visualizações</span><strong id="card-{{ gsc_id_prefix }}-visualizacoes">{{ site.google_search.visualizacoes | default('0') }}</strong></div>
+            <div class="mini-card"><span>Cliques</span><strong id="card-{{ gsc_id_prefix }}-cliques">{{ site.google_search.cliques | default('0') }}</strong></div>
+            <div class="mini-card"><span>CTR</span><strong id="card-{{ gsc_id_prefix }}-ctr">{{ site.google_search.ctr | default('0%') }}</strong></div>
+            <div class="mini-card"><span>Posição Média</span><strong id="card-{{ gsc_id_prefix }}-posicao">{{ site.google_search.posicao | default('0') }}</strong></div>
+        </div>
+    </div>
+    <div class="chart-section">
+        <h3>Origem dos Visitantes</h3>
+        <div class="chart-container-small">
+            <canvas id="{{ chart_origem_id }}"></canvas>
+        </div>
+    </div>
+</div>

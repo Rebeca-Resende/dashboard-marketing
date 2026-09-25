@@ -1,0 +1,107 @@
+{% set loc = localizacao or {} %}
+<div class="section-subtitle yt-section-videos" style="margin-top: 18px;">
+    <span class="yt-color-dot yt-dot-videos"></span> Localização dos espectadores — últimos 30 dias
+</div>
+
+{% if loc.disponivel %}
+<div class="yt-localizacao-panel">
+    <div class="table-section yt-localizacao-table">
+        <div class="table-header">
+            <h3>
+                Dados de Localização
+                {% with titulo='Dados de Localização', texto='Porcentagem da origem geográfica dos espectadores dos vídeos no período analisado.' %}
+                {% include 'partials/info_tooltip.html' %}
+                {% endwith %}
+            </h3>
+        </div>
+
+        {% if loc.paises %}
+        <div class="yt-heatmap-wrap">
+            <div class="yt-heatmap-title">Mapa de calor — países</div>
+            <div class="yt-heatmap-grid">
+                {% for item in loc.paises[:12] %}
+                {% set intensidade = ((item.valor / loc.max_pct) * 100) if loc.max_pct else 0 %}
+                <div class="yt-heat-cell" style="--heat: {{ intensidade | round(0, 'floor') }};">
+                    <span class="yt-heat-label">{{ item.label }}</span>
+                    <span class="yt-heat-pct">{{ item.percentual }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="table-container" style="margin-top: 14px;">
+            <table class="yt-metric-table yt-demo-table">
+                <thead>
+                    <tr>
+                        <th>País</th>
+                        <th>Percentual</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in loc.paises %}
+                    <tr>
+                        <td>{{ item.label }}</td>
+                        <td>
+                            <div class="yt-demo-pct-cell">
+                                <div class="yt-demo-bar-track">
+                                    <div class="yt-demo-bar-fill yt-demo-bar-local" style="width: {{ item.valor | default(0) }}%;"></div>
+                                </div>
+                                <span class="yt-demo-pct-value">{{ item.percentual }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if loc.estados_br %}
+        <div class="yt-heatmap-wrap" style="margin-top: 20px;">
+            <div class="yt-heatmap-title">Mapa de calor — Brasil (estados)</div>
+            <div class="yt-heatmap-grid yt-heatmap-grid-estados">
+                {% for item in loc.estados_br[:15] %}
+                {% set intensidade = ((item.valor / loc.max_pct) * 100) if loc.max_pct else 0 %}
+                <div class="yt-heat-cell yt-heat-cell-estado" style="--heat: {{ intensidade | round(0, 'floor') }};">
+                    <span class="yt-heat-label">{{ item.label }}</span>
+                    <span class="yt-heat-pct">{{ item.percentual }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="table-container" style="margin-top: 14px;">
+            <table class="yt-metric-table yt-demo-table">
+                <thead>
+                    <tr>
+                        <th>Estado (Brasil)</th>
+                        <th>Percentual</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in loc.estados_br %}
+                    <tr>
+                        <td>{{ item.label }}</td>
+                        <td>
+                            <div class="yt-demo-pct-cell">
+                                <div class="yt-demo-bar-track">
+                                    <div class="yt-demo-bar-fill yt-demo-bar-local" style="width: {{ item.valor | default(0) }}%;"></div>
+                                </div>
+                                <span class="yt-demo-pct-value">{{ item.percentual }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div class="table-section yt-localizacao-table yt-localizacao-empty">
+    <p class="yt-ranking-empty">
+        Disponível com YouTube Analytics (OAuth). Requer volume mínimo de espectadores para exibir dados de localização.
+    </p>
+</div>
+{% endif %}
