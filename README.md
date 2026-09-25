@@ -84,10 +84,4 @@ Abra `dashboard.html`. Depois de mudar JS/CSS em `static/`, recarregue com Ctrl+
 | `data/input/` | Planilhas manuais (Akna, IOB, LinkedIn) — vazias no clone |
 | `data/history/` | Cache gerado em runtime (pasta vazia no clone) |
 
-## Publicação no Git
 
-Suba apenas código, templates e `config.example.json`. Ficam fora do Git: credenciais, tokens, `.venv/`, logs, cache preenchido e `dashboard.html` gerado — ver `.gitignore`.
-
-## Licença
-
-Defina conforme a política da sua organização (repositório privado recomendado se houver lógica de negócio específica).
